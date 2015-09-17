@@ -4,6 +4,12 @@ In this section, we present our first complete Haskell program -- a simple *Aste
 
 In the asteroids game presented in this section, the player controls a starship (drawn as a red circle), with the aim of shooting apart rocks (brown circles). The game ends when a rock hits the starship. The ship is controlled by the mouse: clicking at a rock shoots a bullet and the ship gains momentum in the opposite direction.
 
+## Installation
+
+    cabal update
+    cabal install gloss
+    ghc --make Asteroids.hs -O3
+
 ## Exercise (or TODO)
 
 The marketing department is bit worried about the commercial success of this Asteroids clone, and needs you to perk it up a bit. Specifically, the marketing department has the following complaints:
@@ -16,4 +22,3 @@ The marketing department is bit worried about the commercial success of this Ast
     - Adjust the initialWorld function so that the UFO is initialized properly. (Commenting out other functions makes this easier)
     - Adjust the drawWorld function so that the UFO is drawn.
     - Adjust the simulateWorld function so that the UFO moves around. You'll need to invent some state variables for the UFO to track it's location and direction.
-    
