@@ -17,8 +17,8 @@ The marketing department is bit worried about the commercial success of this Ast
 - Currently, the game must be restarted to play another game after the ship hits a rock. Fix the game so it is possible to play another round after the *Game Over* screen has been shown.
 - The marketing department has concerns about a game where a red circle shoots smaller red circles at big brown circles. The rocks needs more personality! (Hint: Check the definitions in the Graphics.Gloss.Data.Picture-module)
 - The marketing department had a picture of an UFO in the game advertisement. **There must be an UFO in the game!** A good plan of attack is to:
-    - Create an UFO datatype. (You'll need to revise this later.)
-    - Add the UFO to the game state.
-    - Adjust the initialWorld function so that the UFO is initialized properly. (Commenting out other functions makes this easier)
-    - Adjust the drawWorld function so that the UFO is drawn.
+    - ~~Create an UFO datatype. (You'll need to revise this later.)~~
+    - ~~Add the UFO to the game state.~~
+    - ~~Adjust the initialWorld function so that the UFO is initialized properly. (Commenting out other functions makes this easier)~~
+    - ~~Adjust the drawWorld function so that the UFO is drawn.~~
     - Adjust the simulateWorld function so that the UFO moves around. You'll need to invent some state variables for the UFO to track it's location and direction.
