@@ -8,7 +8,7 @@ import Graphics.Gloss.Interface.Pure.Simulate
 import Graphics.Gloss.Interface.Pure.Display
 
 -- Define base game area --
-data AsteroidWorld = Play [Rock] Ship [Bullet]
+data AsteroidWorld = Play [Rock] Ship UFO [Bullet]
                    | GameOver
                    deriving (Eq,Show)
 
@@ -23,6 +23,9 @@ data Bullet = Bullet PointInSpace Velocity Age
     deriving (Eq,Show)
 data Rock   = Rock   PointInSpace Size Velocity
     deriving (Eq,Show)
+-- Our UFO --
+data UFO    = UFO  PointInSpace Velocity
+    deriving (Eq, Show)
 
 initialWorld :: AsteroidWorld
 initialWorld = Play
@@ -33,6 +36,7 @@ initialWorld = Play
                    ,Rock (-45,-201) 25 (8,2)
                    ] -- The default rocks
                    (Ship (0,0) (0,5)) -- The initial ship
+                   (UFO  (75, 75) (2, 5)) -- The initial UFO
                    [] -- The initial bullets (none)
 
 
@@ -40,10 +44,11 @@ simulateWorld :: Float -> (AsteroidWorld -> AsteroidWorld)
 
 simulateWorld _        GameOver          = GameOver
 
-simulateWorld timeStep (Play rocks (Ship shipPos shipV) bullets)
+simulateWorld timeStep (Play rocks (Ship shipPos shipV) (UFO ufoPos ufoV) bullets)
   | any (collidesWith shipPos) rocks = GameOver
   | otherwise = Play (concatMap updateRock rocks)
                               (Ship newShipPos shipV)
+                              (UFO newUFOPos ufoV)
                               (concat (map updateBullet bullets))
   where
       collidesWith :: PointInSpace -> Rock -> Bool
@@ -63,6 +68,9 @@ simulateWorld timeStep (Play rocks (Ship shipPos shipV) bullets)
        | otherwise
             = [Rock (restoreToScreen (p .+ timeStep .* v)) s v]
 
+
+
+
       updateBullet :: Bullet -> [Bullet]
       updateBullet (Bullet p v a)
         | a > 5
@@ -76,9 +84,15 @@ simulateWorld timeStep (Play rocks (Ship shipPos shipV) bullets)
       newShipPos :: PointInSpace
       newShipPos = restoreToScreen (shipPos .+ timeStep .* shipV)
 
+      newUFOPos :: PointInSpace
+      newUFOPos = restoreToScreen (ufoPos .+ timeStep .* ufoV)
+
 splitRock :: Rock -> [Rock]
 splitRock (Rock p s v) = [Rock p (s/2) (3 .* rotateV (pi/3)  v)
                          ,Rock p (s/2) (3 .* rotateV (-pi/3) v) ]
+
+destroyUFO :: UFO -> Maybe a
+destroyUFO (UFO p v) = Nothing
 
 restoreToScreen :: PointInSpace -> PointInSpace
 restoreToScreen (x,y) = (cycleCoordinates x, cycleCoordinates y)
@@ -98,12 +112,13 @@ drawWorld GameOver
      . text
      $ "Game Over!"
 
-drawWorld (Play rocks (Ship (x,y) (vx,vy)) bullets)
-  = pictures [ship, asteroids,shots]
+drawWorld (Play rocks (Ship (x,y) (vx,vy)) (UFO (ux,uy) (uvx, uvy)) bullets)
+  = pictures [ship, asteroids, ufo, shots]
    where
     ship      = color red (pictures [translate x y (circle 10)])
     asteroids = pictures [translate x y (color orange (circle s))
                          | Rock   (x,y) s _ <- rocks]
+    ufo       = color green (pictures [translate ux uy (circle 10)])
     shots     = pictures [translate x y (color red (circle 2))
                          | Bullet (x,y) _ _ <- bullets]
 
@@ -112,8 +127,8 @@ handleEvents :: Event -> AsteroidWorld -> AsteroidWorld
 handleEvents _ GameOver = GameOver
 
 handleEvents (EventKey (MouseButton LeftButton) Down _ clickPos)
-             (Play rocks (Ship shipPos shipVel) bullets)
-             = Play rocks (Ship shipPos newVel)
+             (Play rocks (Ship shipPos shipVel) ufo bullets)
+             = Play rocks (Ship shipPos newVel) ufo
                           (newBullet : bullets)
  where
      newBullet = Bullet shipPos
