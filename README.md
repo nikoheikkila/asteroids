@@ -21,4 +21,4 @@ The marketing department is bit worried about the commercial success of this Ast
     - ~~Add the UFO to the game state.~~
     - ~~Adjust the initialWorld function so that the UFO is initialized properly. (Commenting out other functions makes this easier)~~
     - ~~Adjust the drawWorld function so that the UFO is drawn.~~
-    - ~~Adjust the simulateWorld function so that the UFO moves around. You'll need to invent some state variables for the UFO to track it's location and direction.
+    - ~~Adjust the simulateWorld function so that the UFO moves around. You'll need to invent some state variables for the UFO to track it's location and direction.~~
