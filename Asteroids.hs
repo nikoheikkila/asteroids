@@ -107,12 +107,12 @@ cycleCoordinates x
 
 drawWorld :: AsteroidWorld -> Picture
 
-drawWorld GameOver
-   = scale 0.3 0.3
-     . translate (-400) 0
-     . color red
-     . text
-     $ "Game Over!"
+drawWorld GameOver 
+   = pictures [scale 0.3 0.3 . translate (-400) 0 
+     	       . color red . text $ "Game Over!",
+	       scale 0.1 0.1 . translate (-1150) (-550)
+	       . color white . text $ 
+	       "Click right mousebutton to restart"]
 
 drawWorld (Play rocks (Ship (x,y) (vx,vy)) (UFO (ux,uy) (uvx, uvy)) bullets)
   = pictures [ship, asteroids, ufo, shots]
@@ -126,7 +126,10 @@ drawWorld (Play rocks (Ship (x,y) (vx,vy)) (UFO (ux,uy) (uvx, uvy)) bullets)
 
 handleEvents :: Event -> AsteroidWorld -> AsteroidWorld
 
-handleEvents _ GameOver = GameOver
+-- new eventhandler for restarting --
+handleEvents (EventKey (MouseButton RightButton) Down _ _) GameOver
+	      = initialWorld
+
 
 handleEvents (EventKey (MouseButton LeftButton) Down _ clickPos)
              (Play rocks (Ship shipPos shipVel) ufo bullets)
