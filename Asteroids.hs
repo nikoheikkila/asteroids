@@ -35,7 +35,7 @@ initialWorld = Play
                    ,Rock (-210,-15) 30 (-2,-8)
                    ,Rock (-45,-201) 25 (8,2)
                    ] -- The default rocks
-                   (Ship (0,0) (0,5)) -- The initial ship
+                   (Ship (0,0) (0,0)) -- The initial ship
                    (UFO  (75, 75) (2, 5)) -- The initial UFO
                    [] -- The initial bullets (none)
 
@@ -46,6 +46,7 @@ simulateWorld _        GameOver          = GameOver
 
 simulateWorld timeStep (Play rocks (Ship shipPos shipV) (UFO ufoPos ufoV) bullets)
   | any (collidesWith shipPos) rocks = GameOver
+  -- | (collidesWithUFO shipPos) UFO = GameOver
   | otherwise = Play (concatMap updateRock rocks)
                               (Ship newShipPos shipV)
                               (UFO newUFOPos ufoV)
@@ -59,6 +60,10 @@ simulateWorld timeStep (Play rocks (Ship shipPos shipV) (UFO ufoPos ufoV) bullet
       collidesWithBullet r
        = any (\(Bullet bp _ _) -> collidesWith bp r) bullets
 
+      -- collidesWithUFO :: PointInSpace -> UFO -> Bool
+      -- collidesWithUFO p (UFO up _)
+       -- = magV (up .- p) < 10
+
       updateRock :: Rock -> [Rock]
       updateRock r@(Rock p s v)
        | collidesWithBullet r && s < 7
@@ -67,9 +72,6 @@ simulateWorld timeStep (Play rocks (Ship shipPos shipV) (UFO ufoPos ufoV) bullet
             = splitRock r
        | otherwise
             = [Rock (restoreToScreen (p .+ timeStep .* v)) s v]
-
-
-
 
       updateBullet :: Bullet -> [Bullet]
       updateBullet (Bullet p v a)
@@ -83,14 +85,14 @@ simulateWorld timeStep (Play rocks (Ship shipPos shipV) (UFO ufoPos ufoV) bullet
 
       newShipPos :: PointInSpace
       newShipPos = restoreToScreen (shipPos .+ timeStep .* shipV)
-
+  
       newUFOPos :: PointInSpace
-      newUFOPos = restoreToScreen (ufoPos .+ timeStep .* ufoV)
-
+      newUFOPos = restoreToScreen (ufoPos .+ timeStep .* (ufoV + (rotateV (pi/3) shipPos)))
+  
 splitRock :: Rock -> [Rock]
 splitRock (Rock p s v) = [Rock p (s/2) (3 .* rotateV (pi/3)  v)
                          ,Rock p (s/2) (3 .* rotateV (-pi/3) v) ]
-
+ 
 destroyUFO :: UFO -> Maybe a
 destroyUFO (UFO p v) = Nothing
 
