@@ -118,11 +118,14 @@ drawWorld (Play rocks (Ship (x,y) (vx,vy)) (UFO (ux,uy) (uvx, uvy)) bullets)
   = pictures [ship, asteroids, ufo, shots]
    where
     ship      = color red (pictures [translate x y (circle 10)])
-    asteroids = pictures [translate x y (color orange (circle s))
+    asteroids = pictures [(color orange (polygon (asteroidShape x y s)))
                          | Rock   (x,y) s _ <- rocks]
     ufo       = color green (pictures [translate ux uy (circle 10)])
     shots     = pictures [translate x y (color red (circle 2))
                          | Bullet (x,y) _ _ <- bullets]
+                         
+asteroidShape :: Float -> Float -> Float -> [Point]
+asteroidShape x y s = [(x,y+s),(x+s,y), (x,y+0.5),(x+0.4*s,y-0.4*s),(x-0.4*s,y+0.5*s),(x-0.2*s,y-0.2*s),(x+0.6*s,y+0.3*s)]
 
 handleEvents :: Event -> AsteroidWorld -> AsteroidWorld
 
